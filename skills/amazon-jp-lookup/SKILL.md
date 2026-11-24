@@ -40,6 +40,7 @@ python3 lookup.py price <ASIN か商品URL>    # 価格と在庫だけ
 - 検索のスポンサー枠は `sponsored: true` を付けて残す。
 - `product` の結果は `~/.cache/amazon-jp-lookup/<ASIN>.json` に保存し、30分以内の `product` / `price` はそれを `cached: true` で返す。ユーザーが「最新で」と言ったら `--fresh` を付ける。
 - 日本国外から接続すると、Amazon が価格をドルなど円以外で表示することがある。そのときは `price_jpy` を `null` にし、`notes` に理由を出す（換算はしない）。
+- 商品ページの価格が読めない原因を調べるときは、環境変数 `AMAZON_JP_LOOKUP_DUMP_DIR` に保存先のディレクトリを指定して実行すると、取得した HTML が `<ASIN>.html` で保存される。
 - 取得はログインしていない状態（クッキーなし）なので、`session` は常に `signed_out`。Prime 価格・お届け先で変わる在庫や配送・一部のクーポンは、ログイン時の表示と違うことがある。
 
 ## 出力（JSON）

@@ -357,6 +357,44 @@ def write_cache(asin, d):
         pass
 
 
+PRICE_SELECTORS = (
+    "#corePriceDisplay_desktop_feature_div .priceToPay .a-offscreen",
+    "#corePrice_feature_div .a-offscreen",
+    ".priceToPay .a-offscreen",
+    "#apex_desktop .a-price .a-offscreen",
+    "#desktop_unifiedPrice .a-price .a-offscreen",
+    "#tp_price_block_total_price_ww .a-offscreen",
+    "#price_inside_buybox", "#priceblock_ourprice", "#priceblock_dealprice",
+)
+
+
+def price_text(root, html, t):
+    """商品ページの価格の文字列を返す。表示の枠で見つからなければ、
+    ページに埋め込まれた機械向けの価格データ（通貨コードつき）を読む。
+    日本国外からの接続では表示の枠が変わることがあるため"""
+    for sel in PRICE_SELECTORS:
+        v = t(sel)
+        if v and re.search(r"\d", v):
+            return v
+    key = "items[0.base][customerVisiblePrice]"
+    inputs = {}
+    for n in root.iter():
+        name = n.attrs.get("name", "")
+        if n.tag == "input" and name.startswith(key) and name not in inputs:
+            inputs[name] = n.attrs.get("value", "")
+    code = inputs.get(key + "[currencyCode]")
+    shown = inputs.get(key + "[displayString]")
+    amount = inputs.get(key + "[amount]")
+    if code:
+        if code == "JPY":
+            return shown if shown and re.search(r"\d", shown) else (f"￥{amount}" if amount else None)
+        return shown or f"{code} {amount}"  # 円以外。yen() が null にして理由を残す
+    m = re.search(r'"priceAmount":([\d.]+),"currencySymbol":"([^"]+)"', html)
+    if m:
+        return f"{m.group(2)}{m.group(1)}"
+    return None
+
+
 def product(arg, fresh=False):
     asin = to_asin(arg)
     url = f"{BASE}/dp/{asin}" if asin else None
@@ -373,14 +411,21 @@ def product(arg, fresh=False):
     if st != "ok":
         out.update(status=st, notes=notes)
         return out
+    dump = os.environ.get("AMAZON_JP_LOOKUP_DUMP_DIR")
+    if dump:  # 調査用。指定したときだけ取得した HTML を保存する
+        try:
+            os.makedirs(dump, exist_ok=True)
+            with open(os.path.join(dump, f"{asin}.html"), "w", encoding="utf-8") as f:
+                f.write(html)
+        except Exception:
+            pass
     root = dom(html)
     t = lambda sel: (lambda n: norm(n.text()) if n else None)(select_one(root, sel))
     title = t("#productTitle")
     if not title:
         out.update(status="not_found", notes=["商品タイトルが見つからない（商品ページではない可能性）"])
         return out
-    price = yen(t("#corePriceDisplay_desktop_feature_div .priceToPay .a-offscreen")
-                or t("#corePrice_feature_div .a-offscreen") or t(".priceToPay .a-offscreen"), out["notes"])
+    price = yen(price_text(root, html, t), out["notes"])
     list_price = yen(t("#corePriceDisplay_desktop_feature_div .basisPrice .a-offscreen"), out["notes"])
     av = select_one(root, "#availability span") or select_one(root, "#availability")
     availability = clean(av.text()) if av else None
