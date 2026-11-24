@@ -1,4 +1,4 @@
-# amazon-lookup
+# amazon-jp-lookup
 
 エージェント（Claude Code、Claude アプリ、そのほか Agent Skills 形式を読めるもの）が amazon.co.jp の商品を **調べる** ためのスキル。検索・商品詳細・現在価格を、取得時刻つきの JSON で返します。
 
@@ -20,7 +20,7 @@
 ## 中身
 
 ```
-skills/amazon-lookup/
+skills/amazon-jp-lookup/
   SKILL.md            手順・守ること・出力の形
   extract_search.js   検索結果ページから上位10件を取り出す
   extract_product.js  商品ページから価格・在庫・評価・仕様を取り出す
@@ -29,8 +29,8 @@ skills/amazon-lookup/
 ## インストール（Claude Code）
 
 ```sh
-git clone <this repo> ~/amazon-lookup
-ln -s ~/amazon-lookup/skills/amazon-lookup ~/.claude/skills/amazon-lookup
+git clone https://github.com/mediiiiium/amazon-jp-lookup.git ~/amazon-jp-lookup
+ln -s ~/amazon-jp-lookup/skills/amazon-jp-lookup ~/.claude/skills/amazon-jp-lookup
 ```
 
 ブラウザ操作には Claude in Chrome 拡張を使います。

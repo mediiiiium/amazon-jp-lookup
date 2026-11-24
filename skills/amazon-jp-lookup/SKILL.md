@@ -1,9 +1,9 @@
 ---
-name: amazon-lookup
+name: amazon-jp-lookup
 description: amazon.co.jp の商品を調べる（検索・商品詳細・現在価格）。エージェントが持っているブラウザでページを読み、取得時刻つきの JSON で返す。「Amazonで〜を調べて」「このASINの価格は」「amazon.co.jp のこの商品の評価は」などで使う。購入・カート・注文履歴は扱わない。
 ---
 
-# amazon-lookup
+# amazon-jp-lookup
 
 amazon.co.jp の商品を **読むだけ** のスキル。ブラウザはエージェント側のもの（Claude Code なら Claude in Chrome、Muse ならアプリ内ブラウザ）を使う。このスキルが決めるのは「どのURLを開き、何を読み、どの形で返すか」だけ。
 
@@ -58,7 +58,7 @@ JavaScript を実行できない環境（Muse など）では、ページの表�
 
 ## キャッシュ
 
-ファイルを書ける環境では `~/.cache/amazon-lookup/<ASIN>.json` に最後の `get_product` の結果を保存する。30分以内ならそれを使う。書けない環境（Muse など）では、同じ会話の中で取得済みの値を使い回す。ユーザーが「最新で」と言ったらキャッシュを使わない。
+ファイルを書ける環境では `~/.cache/amazon-jp-lookup/<ASIN>.json` に最後の `get_product` の結果を保存する。30分以内ならそれを使う。書けない環境（Muse など）では、同じ会話の中で取得済みの値を使い回す。ユーザーが「最新で」と言ったらキャッシュを使わない。
 
 ## 出力（JSON）
 
