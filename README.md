@@ -57,3 +57,7 @@ open -na "Google Chrome" --args --profile-directory="AmazonLookup"
 ## 壊れたとき
 
 Amazon のページ構造は予告なく変わります。項目が `null` になり始めたら、スクリプトのセレクタを直してください。推測で値を埋めないのが方針なので、読めない項目は `null` と `notes` に出ます。
+
+## ライセンス
+
+MIT
