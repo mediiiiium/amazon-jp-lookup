@@ -432,10 +432,10 @@ def product(arg, fresh=False):
         if k:
             add(k.text(), r.text().replace(k.text(), ""))
 
-    notes = []
+    notes = list(out["notes"])  # yen() が残した通貨の理由を消さない
     for k, v in {"price_jpy": price, "availability": availability,
                  "rating": rating, "review_count": review_count}.items():
-        if v is None:
+        if v is None and not (k == "price_jpy" and FOREIGN_NOTE in notes):
             notes.append(f"{k} を読めなかった")
     if price is None and select_one(root, "#buybox-see-all-buying-choices"):
         notes.append("カートボックスがなく「すべての出品を見る」表示（出品者ごとに価格が違う）")
