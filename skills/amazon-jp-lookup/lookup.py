@@ -191,6 +191,21 @@ def num(s):
     return float(m.group()) if m and "." in m.group() else (int(m.group()) if m else None)
 
 
+FOREIGN_NOTE = "価格が円以外の通貨で表示された（日本国外からの接続の可能性）。price_jpy は null にした"
+
+
+def yen(s, notes=None):
+    """円表示の価格だけを整数で返す。$ などほかの通貨なら null にして notes に理由を残す"""
+    if not s:
+        return None
+    if "￥" in s or "¥" in s or "円" in s:
+        v = num(s)
+        return int(v) if v is not None else None
+    if notes is not None and FOREIGN_NOTE not in notes:
+        notes.append(FOREIGN_NOTE)
+    return None
+
+
 def count(s):
     if not s:
         return None
@@ -297,7 +312,7 @@ def search(query, limit=10):
         results.append({
             "asin": asin,
             "title": norm(h2.text()) if h2 else None,
-            "price_jpy": num(price.text()) if price else None,
+            "price_jpy": yen(price.text(), out["notes"]) if price else None,
             "rating": num((rating.text() if rating else "").replace("5つ星のうち", "")),
             "review_count": count(rc.text()) if rc else None,
             "sponsored": bool(select_one(e, ".puis-sponsored-label-text, .s-sponsored-label-text")),
@@ -364,9 +379,9 @@ def product(arg, fresh=False):
     if not title:
         out.update(status="not_found", notes=["商品タイトルが見つからない（商品ページではない可能性）"])
         return out
-    price = num(t("#corePriceDisplay_desktop_feature_div .priceToPay .a-offscreen")
-                or t("#corePrice_feature_div .a-offscreen") or t(".priceToPay .a-offscreen"))
-    list_price = num(t("#corePriceDisplay_desktop_feature_div .basisPrice .a-offscreen"))
+    price = yen(t("#corePriceDisplay_desktop_feature_div .priceToPay .a-offscreen")
+                or t("#corePrice_feature_div .a-offscreen") or t(".priceToPay .a-offscreen"), out["notes"])
+    list_price = yen(t("#corePriceDisplay_desktop_feature_div .basisPrice .a-offscreen"), out["notes"])
     av = select_one(root, "#availability span") or select_one(root, "#availability")
     availability = clean(av.text()) if av else None
 
