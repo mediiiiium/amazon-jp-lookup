@@ -1,0 +1,9 @@
+{
+  "name": "amazon-jp-lookup",
+  "displayName": "amazon.co.jp Lookup",
+  "version": "0.1.0",
+  "description": "amazon.co.jp の商品を検索し、商品詳細と現在価格を取得時刻つきで返す読み取り専用スキル。Amazon.co.jp 利用規約のエージェント条件に沿って、エージェントだと名乗って公開ページを読みます。",
+  "author": { "name": "mediiiiium", "url": "https://github.com/mediiiiium" },
+  "license": "MIT",
+  "repository": "https://github.com/mediiiiium/amazon-jp-lookup"
+}
